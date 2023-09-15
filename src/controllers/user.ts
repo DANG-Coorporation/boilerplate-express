@@ -4,6 +4,8 @@ import UserService from "../service/user.service";
 import { HttpStatusCode } from "axios";
 import { ProcessError } from "../helper/Error/errorHandler";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
+import { validate } from "../helper/function/validator";
+import { postUserValidator } from "../helper/validator/postUser.validator";
 
 export class UserController {
   userServices: UserService;
@@ -40,6 +42,7 @@ export class UserController {
 
   async create(req: Request, res: Response) {
     try {
+      await validate(postUserValidator, req.body);
       const user = await this.userServices.create(req.body);
       res.json(user.toJSON());
     } catch (err) {
