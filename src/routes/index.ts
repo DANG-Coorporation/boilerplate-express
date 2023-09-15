@@ -23,15 +23,21 @@ export default class MainRouter {
 
     this.router
       .route("/users/:id")
-      .get(this.userController.read)
-      .put(this.userController.update)
-      .delete(this.userController.delete);
+      .get((req: Request, res: Response) => this.userController.read(req, res))
+      .put((req: Request, res: Response) =>
+        this.userController.update(req, res)
+      )
+      .delete((req: Request, res: Response) =>
+        this.userController.delete(req, res)
+      );
 
     this.router
       .route("/users")
-      .get(this.userController.readAll)
-      .post((req: Request, res: Response) => {
-        this.userController.create(req, res);
-      });
+      .get((req: Request, res: Response) =>
+        this.userController.paginate(req, res)
+      )
+      .post((req: Request, res: Response) =>
+        this.userController.create(req, res)
+      );
   }
 }

@@ -3,6 +3,7 @@ import User from "../models/user";
 import UserService from "../service/user.service";
 import { HttpStatusCode } from "axios";
 import { ProcessError } from "../helper/Error/errorHandler";
+import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 
 export class UserController {
   userServices: UserService;
@@ -11,29 +12,29 @@ export class UserController {
     this.userServices = new UserService();
   }
 
-  async readAll(req: Request, res: Response): Promise<void> {
+  async paginate(req: Request, res: Response): Promise<void> {
     try {
-      const users = await User.findAll();
-      // Map Sequelize instances to plain objects
-      const userObjects = users.map((user: any) => user.get({ plain: true }));
-      res.json(userObjects);
+      const { page, limit } = req.query;
+      const users = await this.userServices.page({
+        page: Number(page),
+        limit: Number(limit),
+        data: { ...req.query },
+      });
+      res.status(HttpStatusCode.Ok).json(users);
     } catch (err) {
-      res.json(err);
+      ProcessError(err, res);
     }
   }
 
   async read(req: Request, res: Response) {
     try {
-      const user = await User.findByPk(req.params.id);
-      if (user) {
-        // Cast user to UserInterface
-        const userObject = user.get({ plain: true });
-        res.json(userObject);
-      } else {
-        res.status(204).send();
-      }
+      const id = Number(req.params.id);
+      if (!id) throw new BadRequestException("Invalid id", {});
+      const user = await this.userServices.getById(id);
+      const userObject = user.toJSON();
+      res.json(userObject);
     } catch (err) {
-      res.json(err);
+      ProcessError(err, res);
     }
   }
 
@@ -55,20 +56,20 @@ export class UserController {
         affectedRows: affectedRows || 0,
       });
     } catch (err) {
-      res.json(err);
+      ProcessError(err, res);
     }
   }
 
   async delete(req: Request, res: Response) {
     try {
-      const removedRows = await User.destroy({
-        where: { id: req.params.id },
-      });
-      res.json({
-        removedRows: removedRows || 0,
+      const id = Number(req.params.id);
+      if (!id) throw new BadRequestException("Invalid id", {});
+      const affectedRows = await this.userServices.deleteById(id);
+      res.status(HttpStatusCode.Ok).json({
+        affectedRows: affectedRows || 0,
       });
     } catch (err) {
-      res.json(err);
+      ProcessError(err, res);
     }
   }
 }
