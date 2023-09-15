@@ -2,6 +2,7 @@ import http from "http";
 import expressServer from "./server";
 import dotenv from "dotenv";
 import { AddressInfo } from "net";
+import { Request, Response } from "express";
 dotenv.config();
 
 // Normalize port number which will expose server
@@ -18,8 +19,24 @@ const server = http.createServer(expressInstance);
 
 // Start listening on the specified Port (Default: 3000)
 server.listen(port);
-server.on("error", onError);
+server.on("error", (error: NodeJS.ErrnoException, res: Response) => {
+  if (error.syscall !== "listen") {
+    throw error;
+  }
+  onError(error);
+  res.status(500).send("Internal Server Error");
+});
 server.on("listening", onListening);
+server.on("request", (req: Request, res) => {
+  console.log(
+    JSON.stringify({
+      method: req.method,
+      url: req.url,
+      headers: req.headers,
+      body: req.body,
+    })
+  );
+});
 
 // Port Normalization
 function normalizePort(val: number | string): number | string | boolean {

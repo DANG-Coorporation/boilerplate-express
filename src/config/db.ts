@@ -1,5 +1,6 @@
 import sequelize, { Sequelize } from "sequelize";
 import dotenv from "dotenv";
+import configConstants from "./constants";
 dotenv.config();
 
 export default class Database {
@@ -13,20 +14,13 @@ export default class Database {
   database: sequelize.Sequelize;
 
   constructor() {
-    console.log(
-      process.env.DB_NAME,
-      process.env.DB_USER,
-      process.env.DB_PASS,
-      process.env.DB_HOST,
-      process.env.DB_PORT
-    );
-    this.db = process.env.DB_NAME ?? "db_name";
-    this.user = process.env.DB_USER ?? "db_user";
-    this.password = process.env.DB_PASS ?? "db_pass";
-    this.host = process.env.DB_HOST ?? "db_host";
-    this.port = parseInt(process.env.DB_PORT || "1433", 10);
-    this.maxPool = parseInt(process.env.MAX_POOL || "20", 10);
-    this.minPool = parseInt(process.env.MIN_POOL || "1", 10);
+    this.db = configConstants.DB_NAME;
+    this.user = configConstants.DB_USER;
+    this.password = configConstants.DB_PASS;
+    this.host = configConstants.DB_HOST;
+    this.port = configConstants.DB_PORT;
+    this.maxPool = configConstants.DB_MAX_POOL;
+    this.minPool = configConstants.DB_MIN_POOL;
     this.database = new Sequelize(this.db, this.user, this.password, {
       host: this.host,
       dialect: "mysql",
@@ -62,6 +56,8 @@ export default class Database {
       });
 
     this.database.sync({
+      alter: false,
+      force: false,
       // Using 'force' will drop any table defined in the models and create them again.
       // force: true
     });

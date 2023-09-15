@@ -1,4 +1,4 @@
-import { Router } from "express";
+import { Request, Response, Router } from "express";
 import { UserController } from "../controllers/user";
 
 export default class MainRouter {
@@ -22,14 +22,16 @@ export default class MainRouter {
     });
 
     this.router
-      .route("/users")
-      .get(this.userController.readAll)
-      .post(this.userController.create);
-
-    this.router
       .route("/users/:id")
       .get(this.userController.read)
       .put(this.userController.update)
       .delete(this.userController.delete);
+
+    this.router
+      .route("/users")
+      .get(this.userController.readAll)
+      .post((req: Request, res: Response) => {
+        this.userController.create(req, res);
+      });
   }
 }

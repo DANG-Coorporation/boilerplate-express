@@ -5,7 +5,7 @@ import helmet from "helmet";
 import cors from "cors";
 import MainRouter from "./routes";
 
-export default class server {
+export default class Server {
   expressInstance: express.Express;
 
   constructor() {
@@ -15,18 +15,18 @@ export default class server {
   }
 
   private middlewareSetup() {
-    // Setup requests gZip compression
-    this.expressInstance.use(compression());
-
-    // Setup common security protection
+    // Setup common security protection (Helmet should come first)
     this.expressInstance.use(helmet());
 
-    // Setup Cross Origin access
+    // Setup Cross Origin access (CORS can be configured as needed)
     this.expressInstance.use(cors());
 
-    // Setup requests format parsing (Only JSON requests will be valid)
+    // Setup requests format parsing (BodyParser should come before other routes)
     this.expressInstance.use(bodyParser.urlencoded({ extended: true }));
     this.expressInstance.use(bodyParser.json());
+
+    // Setup requests gZip compression (Should be the last middleware)
+    this.expressInstance.use(compression());
   }
 
   private routesSetup() {

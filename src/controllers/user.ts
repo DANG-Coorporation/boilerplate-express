@@ -1,7 +1,16 @@
 import { Request, Response } from "express";
-import { User } from "../models/user";
+import User from "../models/user";
+import UserService from "../service/user.service";
+import { HttpStatusCode } from "axios";
+import { ProcessError } from "../helper/Error/errorHandler";
 
 export class UserController {
+  userServices: UserService;
+
+  constructor() {
+    this.userServices = new UserService();
+  }
+
   async readAll(req: Request, res: Response): Promise<void> {
     try {
       const users = await User.findAll();
@@ -30,10 +39,10 @@ export class UserController {
 
   async create(req: Request, res: Response) {
     try {
-      const user = await User.create(req.body);
+      const user = await this.userServices.create(req.body);
       res.json(user.toJSON());
     } catch (err) {
-      res.json(err);
+      ProcessError(err, res);
     }
   }
 
