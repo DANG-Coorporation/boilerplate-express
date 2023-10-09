@@ -1,9 +1,10 @@
 {
   "development": {
-    "username": "root",
-    "password": null,
-    "database": "database_test",
-    "host": "127.0.0.1",
+    "username": "kucing",
+    "password": "password",
+    "database": "olshop",
+    "host": "203.175.11.82",
+    "port": "33061",
     "dialect": "mysql"
   },
   "test": {

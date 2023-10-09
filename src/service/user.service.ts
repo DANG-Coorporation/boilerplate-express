@@ -3,12 +3,12 @@ import { BadRequestException } from "../helper/Error/BadRequestException/BadRequ
 import { NotFoundException } from "../helper/Error/NotFound/NotFoundException";
 import { removeLimitAndPage } from "../helper/function/filteredData";
 import { IPaginate } from "../helper/interface/paginate/paginate.interface";
-import User, { UserCreationAttributes } from "../models/user";
+import Users, { UserCreationAttributes } from "../database/models/user";
 
 export default class UserService {
   async create(input: UserCreationAttributes) {
     try {
-      const user = await User.create(input);
+      const user = await Users.create(input);
       return user;
     } catch (error: any) {
       throw new Error(`Error creating user: ${error.message}`);
@@ -17,7 +17,7 @@ export default class UserService {
 
   async gets(conditions: Partial<UserCreationAttributes>) {
     try {
-      const users = await User.findAll({ where: conditions });
+      const users = await Users.findAll({ where: conditions });
       return users;
     } catch (error: any) {
       throw new Error(`Error getting users: ${error.message}`);
@@ -26,8 +26,8 @@ export default class UserService {
 
   async findOne(conditions: Partial<UserCreationAttributes>) {
     try {
-      const user = await User.findOne({ where: conditions });
-      if (!user) throw new NotFoundException("User not found", {});
+      const user = await Users.findOne({ where: conditions });
+      if (!user) throw new NotFoundException("Users not found", {});
       return user;
     } catch (error: any) {
       throw error;
@@ -36,8 +36,8 @@ export default class UserService {
 
   async getById(id: number) {
     try {
-      const user = await User.findByPk(id);
-      if (!user) throw new NotFoundException("User not found", {});
+      const user = await Users.findByPk(id);
+      if (!user) throw new NotFoundException("Users not found", {});
       return user;
     } catch (error: any) {
       throw error;
@@ -46,8 +46,8 @@ export default class UserService {
 
   async deleteById(id: number) {
     try {
-      const user = await User.destroy({ where: { id } });
-      if (!user) throw new NotFoundException("User not found", {});
+      const user = await Users.destroy({ where: { id } });
+      if (!user) throw new NotFoundException("Users not found", {});
       return user;
     } catch (error: any) {
       throw error;
@@ -57,10 +57,10 @@ export default class UserService {
   async updateById(
     id: number,
     input: Partial<UserCreationAttributes>
-  ): Promise<User> {
+  ): Promise<Users> {
     try {
-      const user = await User.update(input, { where: { id } });
-      if (!user) throw new NotFoundException("User not found", {});
+      const user = await Users.update(input, { where: { id } });
+      if (!user) throw new NotFoundException("Users not found", {});
       const result = await this.getById(id);
       return result;
     } catch (error: any) {
@@ -74,7 +74,7 @@ export default class UserService {
       const limit = input.limit ?? 10;
       const offset = Math.max(page - 1, 0) * limit;
       const conditions = removeLimitAndPage(input.data);
-      const users = await User.findAndCountAll({
+      const users = await Users.findAndCountAll({
         where: {
           name: {
             [Op.like]: `%${conditions.name}%`,

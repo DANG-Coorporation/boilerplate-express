@@ -1,11 +1,11 @@
 import { Request, Response } from "express";
-import User from "../models/user";
 import UserService from "../service/user.service";
 import { HttpStatusCode } from "axios";
 import { ProcessError } from "../helper/Error/errorHandler";
 import { BadRequestException } from "../helper/Error/BadRequestException/BadRequestException";
 import { validate } from "../helper/function/validator";
 import { postUserValidator } from "../helper/validator/postUser.validator";
+import Users from "../database/models/user";
 
 export class UserController {
   userServices: UserService;
@@ -52,7 +52,7 @@ export class UserController {
 
   async update(req: Request, res: Response) {
     try {
-      const [affectedRows] = await User.update(req.body, {
+      const [affectedRows] = await Users.update(req.body, {
         where: { id: req.params.id },
       });
       res.json({

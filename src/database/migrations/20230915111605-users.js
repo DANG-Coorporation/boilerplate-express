@@ -17,21 +17,27 @@ module.exports = {
         autoIncrement: true,
       },
       name: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(255),
         allowNull: true,
       },
       email: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(255),
         allowNull: true,
       },
       password: {
-        type: Sequelize.STRING(100),
+        type: Sequelize.STRING(255),
+      },
+      uniqueId: {
+        type: Sequelize.STRING(255),
+        allowNull: true,
       },
       createdAt: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
       updatedAt: {
         type: Sequelize.DATE,
+        defaultValue: Sequelize.literal("CURRENT_TIMESTAMP"),
       },
     });
   },
